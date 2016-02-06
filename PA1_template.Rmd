@@ -7,12 +7,44 @@ output:
 
 
 ## Loading and preprocessing the data
+```{r}
+# Install library
+list_of_packages <- c('lattice', 'xts', 'miscTools')
+new_packages <- list_of_packages[!(list_of_packages %in% installed.packages()[,'Package'])]
+if(length(new_packages)) install.packages(new_packages, repos="http://cran.rstudio.com/")
+library(lattice)
+library(xts)
+library(miscTools)
 
-
+# Read File
+unzip("activity.zip", overwrite = TRUE)
+dataset <- read.csv("activity.csv", na.strings = "NA", stringsAsFactors=FALSE, header = TRUE)
+dataset$date <- strptime(dataset$date, "%Y-%m-%d")
+dataset$dateFactor <- cut(dataset$date, breaks="days")
+```
 
 ## What is mean total number of steps taken per day?
+```{r}
+# Ignore NA and 0 Steps
+dataset <- dataset[!is.na(dataset$steps),]
+dataset <- dataset[!dataset$steps == 0,]
 
+# Draw Histogram
+histogram(dataset$steps ~ dataset$dateFactor ,xlab='Days', ylab='Steps', main="Total steps taken per day")
 
+# Prepare Steps Time Series
+steps.xts <- xts(dataset$steps, dataset$date)
+
+# Steps Mean
+steps_means <- apply.daily(steps.xts, colMeans)
+plot(steps_means, main="Mean of steps per day")
+steps_means
+
+# Steps Median
+steps_medians <- apply.daily(steps.xts, colMedians)
+plot(steps_medians, main="Median of steps per day")
+steps_medians
+```
 
 ## What is the average daily activity pattern?
 

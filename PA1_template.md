@@ -32,7 +32,13 @@ library(miscTools)
 
 # Read File
 unzip("activity.zip", overwrite = TRUE)
-dataset <- read.csv("activity.csv", na.strings = "NA", stringsAsFactors=FALSE, header = TRUE)
+dataset <- read.csv(
+    "activity.csv", 
+    na.strings = "NA", 
+    stringsAsFactors=FALSE, 
+    header = TRUE
+)
+
 dataset$date <- strptime(dataset$date, "%Y-%m-%d")
 dataset$dateFactor <- cut(dataset$date, breaks="days")
 ```
@@ -45,7 +51,12 @@ dataset <- dataset[!is.na(dataset$steps),]
 dataset <- dataset[!dataset$steps == 0,]
 
 # Draw Histogram
-histogram(dataset$steps ~ dataset$dateFactor ,xlab='Days', ylab='Steps', main="Total steps taken per day")
+histogram(
+    dataset$steps ~ dataset$dateFactor, 
+    xlab='Days', 
+    ylab='Steps', 
+    main="Total steps taken per day"
+)
 ```
 
 ![](PA1_template_files/figure-html/unnamed-chunk-2-1.png)<!-- -->
@@ -194,6 +205,44 @@ steps_medians
 ## What is the average daily activity pattern?
 
 
+```r
+mean_steps_across_intervals <- aggregate(
+    dataset$steps ~ dataset$interval, 
+    dataset, 
+    mean
+)
+
+names(mean_steps_across_intervals) <- c("interval","steps")
+
+plot(
+    mean_steps_across_intervals$interval, 
+    mean_steps_across_intervals$steps,
+    type="l",
+    main="Average number of steps taken by daily interval",
+    xlab='Interval',
+    ylab='Avg Steps'
+)
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-3-1.png)<!-- -->
+
+```r
+max_steps_by_interval <- mean_steps_across_intervals[
+    mean_steps_across_intervals$steps == max(mean_steps_across_intervals$steps)
+    ,]
+
+out <- paste(
+    "Interval ", max_steps_by_interval$interval,
+    " contains the maximum average"," of steps accros all the days. ",
+    sep=""
+)
+
+print(out)
+```
+
+```
+## [1] "Interval 835 contains the maximum average of steps accros all the days. "
+```
 
 ## Imputing missing values
 

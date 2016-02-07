@@ -73,20 +73,20 @@ library(xts)</code></pre>
 
 # Read File
 unzip(&quot;activity.zip&quot;, overwrite = TRUE)
-dataset &lt;- read.csv(
+dataset_complete &lt;- read.csv(
     &quot;activity.csv&quot;, 
     na.strings = &quot;NA&quot;, 
     stringsAsFactors=FALSE, 
     header = TRUE
 )
 
-dataset$date &lt;- strptime(dataset$date, &quot;%Y-%m-%d&quot;)
-dataset$dateFactor &lt;- cut(dataset$date, breaks=&quot;days&quot;)</code></pre>
+dataset_complete$date &lt;- strptime(dataset_complete$date, &quot;%Y-%m-%d&quot;)
+dataset_complete$dateFactor &lt;- cut(dataset_complete$date, breaks=&quot;days&quot;)</code></pre>
 </div>
 <div id="what-is-mean-total-number-of-steps-taken-per-day" class="section level2">
 <h2>What is mean total number of steps taken per day?</h2>
 <pre class="r"><code># Ignore NA and 0 Steps
-dataset &lt;- dataset[!is.na(dataset$steps),]
+dataset &lt;- dataset_complete[!is.na(dataset_complete$steps),]
 dataset &lt;- dataset[!dataset$steps == 0,]
 
 # Draw Histogram
@@ -253,9 +253,22 @@ print(out)</code></pre>
 </div>
 <div id="imputing-missing-values" class="section level2">
 <h2>Imputing missing values</h2>
+<pre class="r"><code>dataset_na &lt;- dataset_complete[is.na(dataset_complete$steps),]
+out &lt;- paste(&quot;There are &quot;, nrow(dataset_na), &quot;rows with no data&quot;, sep=&quot;&quot;)
+print(out)</code></pre>
+<pre><code>## [1] &quot;There are 2304rows with no data&quot;</code></pre>
 </div>
 <div id="are-there-differences-in-activity-patterns-between-weekdays-and-weekends" class="section level2">
 <h2>Are there differences in activity patterns between weekdays and weekends?</h2>
+<pre class="r"><code>##df1$date &lt;- as.Date(df1$date)
+#create a vector of weekdays
+##weekdays1 &lt;- c('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday')
+#Use `%in%` and `weekdays` to create a logical vector
+#convert to `factor` and specify the `levels/labels`
+##df1$wDay &lt;- factor((weekdays(df1$date) %in% weekdays1), 
+##         levels=c(FALSE, TRUE), labels=c('weekend', 'weekday') 
+#Or
+##df1$wDay &lt;- c('weekend', 'weekday')[(weekdays(df1$date) %in% weekdays1)+1L]</code></pre>
 </div>
 
 

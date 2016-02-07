@@ -18,21 +18,21 @@ library(miscTools)
 
 # Read File
 unzip("activity.zip", overwrite = TRUE)
-dataset <- read.csv(
+dataset_complete <- read.csv(
     "activity.csv", 
     na.strings = "NA", 
     stringsAsFactors=FALSE, 
     header = TRUE
 )
 
-dataset$date <- strptime(dataset$date, "%Y-%m-%d")
-dataset$dateFactor <- cut(dataset$date, breaks="days")
+dataset_complete$date <- strptime(dataset_complete$date, "%Y-%m-%d")
+dataset_complete$dateFactor <- cut(dataset_complete$date, breaks="days")
 ```
 
 ## What is mean total number of steps taken per day?
 ```{r}
 # Ignore NA and 0 Steps
-dataset <- dataset[!is.na(dataset$steps),]
+dataset <- dataset_complete[!is.na(dataset_complete$steps),]
 dataset <- dataset[!dataset$steps == 0,]
 
 # Draw Histogram
@@ -92,7 +92,25 @@ print(out)
 ```
 
 ## Imputing missing values
-
-
+```{r}
+dataset_na <- dataset_complete[is.na(dataset_complete$steps),]
+out <- paste("There are ", nrow(dataset_na), 
+             " rows with no data in the dataset", 
+             sep=""
+)
+print(out)
+```
 
 ## Are there differences in activity patterns between weekdays and weekends?
+```{r}
+##df1$date <- as.Date(df1$date)
+#create a vector of weekdays
+##weekdays1 <- c('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday')
+#Use `%in%` and `weekdays` to create a logical vector
+#convert to `factor` and specify the `levels/labels`
+##df1$wDay <- factor((weekdays(df1$date) %in% weekdays1), 
+##         levels=c(FALSE, TRUE), labels=c('weekend', 'weekday') 
+#Or
+##df1$wDay <- c('weekend', 'weekday')[(weekdays(df1$date) %in% weekdays1)+1L]
+```
+

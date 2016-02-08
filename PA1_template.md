@@ -48,7 +48,9 @@ dataset_complete$dateFactor <- cut(dataset_complete$date, breaks="days")
 ```r
 # Ignore NA and 0 Steps
 dataset <- dataset_complete[!is.na(dataset_complete$steps),]
-#dataset <- dataset[!dataset$steps == 0,]
+# dataset <- dataset[!dataset$steps == 0,] --- Removing 0's throw more meaningfull results
+# in pretty much every graph. As that wasn't requested I left this commented. 
+# Uncomment to see better Histogram, median and mean results.
 
 # Draw Histogram
 histogram(
@@ -282,7 +284,7 @@ histogram(
     dataset_complete_to_fill$steps ~ dataset_complete_to_fill$dateFactor, 
     xlab='Days', 
     ylab='Steps', 
-    main="Total steps taken per day"
+    main="Total steps taken per day using NA"
 )
 ```
 
@@ -291,14 +293,52 @@ histogram(
 ## Are there differences in activity patterns between weekdays and weekends?
 
 ```r
-##df1$date <- as.Date(df1$date)
-#create a vector of weekdays
-##weekdays1 <- c('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday')
-#Use `%in%` and `weekdays` to create a logical vector
-#convert to `factor` and specify the `levels/labels`
-##df1$wDay <- factor((weekdays(df1$date) %in% weekdays1), 
-##         levels=c(FALSE, TRUE), labels=c('weekend', 'weekday') 
-#Or
-##df1$wDay <- c('weekend', 'weekday')[(weekdays(df1$date) %in% weekdays1)+1L]
+# Create a vector of weekdays
+weekdays_list <- c('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday')
+
+# Fill weekday or weekend day
+dataset_complete_to_fill$weekDay <- factor((weekdays(dataset_complete_to_fill$date) %in% weekdays_list), 
+         levels=c(FALSE, TRUE), labels=c('weekend', 'weekday'))
+
+dataset_weekday <- dataset_complete_to_fill[dataset_complete_to_fill$weekDay == 'weekday',]
+dataset_weekday_mean <- aggregate(
+    dataset_weekday$steps ~ dataset_weekday$interval, 
+    dataset_weekday, 
+    mean
+)
+names(dataset_weekday_mean) <- c("interval","steps")
+
+dataset_weekend <- dataset_complete_to_fill[dataset_complete_to_fill$weekDay == 'weekend',]
+dataset_weekend_mean <- aggregate(
+    dataset_weekend$steps ~ dataset_weekend$interval, 
+    dataset_weekend, 
+    mean
+)
+names(dataset_weekend_mean) <- c("interval","steps")
+
+old.par <- par(mfrow=c(2, 1))
+plot(
+    dataset_weekday_mean$interval, 
+    dataset_weekday_mean$steps,
+    type="l",
+    main="Weekday",
+    xlab='Interval',
+    ylab='Avg Steps'
+)
+
+plot(
+    dataset_weekend_mean$interval, 
+    dataset_weekend_mean$steps,
+    type="l",
+    main="Weekend",
+    xlab='Interval',
+    ylab='Avg Steps'
+)
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-5-1.png)<!-- -->
+
+```r
+par(old.par)
 ```
 
